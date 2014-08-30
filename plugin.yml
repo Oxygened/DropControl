@@ -1,0 +1,11 @@
+name: DropControl
+main: oxy.dropcontrol.Main
+version: 1.0
+description: Controlez les drops
+author: Oxygened
+commands:
+   dropcontrol:
+     description: Parametrer le plugin
+     usage: /dropcontrol manager [world]
+     permission: dropcontrol.admin
+     permission-message: You don't have <permission>
