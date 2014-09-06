@@ -10,43 +10,31 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class LoadingBar implements Runnable
 {
 	private Main plugin;
-	private String lore[]= new String[1];
-	private ItemStack item;
-	private int i;
-	public LoadingBar(ItemStack item,int i,Main main)
-	{
-		this.plugin=main;
-		this.item=item;
-		this.i=i;
-	}
-	@Override
-	public void run() 
-	{
-		ItemMeta meta=item.getItemMeta();
-		if(i>8)
-		{
-			lore[0]=ChatColor.GREEN+"Enregistré ✔";
-			meta.setLore(Arrays.asList(lore));
-			item.setItemMeta(meta);
-			return;
-		}	
-		if(!meta.hasLore())
-		{
-			lore[0]=ChatColor.AQUA+"";
-		}
-		else
-		{
-			if(meta.getLore().get(0).equals(ChatColor.GREEN+"Enregistré ✔"))
-			{
-				final String[] erase={ChatColor.AQUA+""};
-				meta.setLore(Arrays.asList(erase));
-			}
-			lore=meta.getLore().toArray(new String[1]);
-		}
-		lore[0]=lore[0]+"۞";
-		meta.setLore(Arrays.asList(lore));
-		item.setItemMeta(meta);
-		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,new LoadingBar(item,i+1,plugin),1);
-	}
-
+    private final ItemMeta meta;
+    private final ItemStack item;
+    private int ticks = 0;
+ 
+    public LoadingBar(final ItemStack item,Main main) 
+    {
+    	this.plugin=main;
+    	this.item=item;
+        this.meta = item.getItemMeta();
+    }
+ 
+    @Override
+    public void run() 
+    {
+        if(ticks < 12) 
+        {
+            meta.setLore(Arrays.asList(ChatColor.AQUA + new String(new char[ticks]).replace("\0", "۞")));
+            ticks++;
+            item.setItemMeta(meta);
+            Bukkit.getScheduler().runTaskLater(plugin,this,1);
+        } 
+        else 
+        {
+            meta.setLore(Arrays.asList(ChatColor.GREEN + "✔ Enregistré"));
+            item.setItemMeta(meta);
+        }
+    }
 }

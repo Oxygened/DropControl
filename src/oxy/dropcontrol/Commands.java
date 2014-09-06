@@ -60,7 +60,8 @@ public class Commands implements CommandExecutor
 				}	
 			}
 		}
-		return false;
+		Bukkit.dispatchCommand(sender,"help dropcontrol");
+		return true;
 		
 	}
 }

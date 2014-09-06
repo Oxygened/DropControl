@@ -12,11 +12,15 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.ExpBottleEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.projectiles.ProjectileSource;
 
 public class EventListener implements Listener
 {
@@ -25,6 +29,7 @@ public class EventListener implements Listener
 	private ItemStack save;
 	private HashMap<String,Inventory> inventoriesPerWorld=new HashMap<String,Inventory>();
 	private HashMap<String,List<ItemStack>> itemStacksPerWorld=new HashMap<String, List<ItemStack>>();
+	@SuppressWarnings("unchecked")
 	public EventListener(Main main)
 	{
 		this.plugin=main;
@@ -77,7 +82,9 @@ public class EventListener implements Listener
 	{
 		return itemStacksPerWorld.get(worldname);
 	}
+	////////////
 	//Anti-drop
+	////////////
 	@EventHandler
 	public void onDrop(final PlayerDropItemEvent e)
 	{
@@ -115,6 +122,41 @@ public class EventListener implements Listener
 			
 		}
 	}
+	@EventHandler
+	public void onDeath(final PlayerDeathEvent e)
+	{
+		if(!plugin.getConfig().getBoolean("ExpDrop.player"))
+			return;
+		final Player p=e.getEntity();
+		if(!p.hasPermission("dropcontrol.bypass")&&!p.isOp())
+		{
+			e.setDroppedExp(0);
+		}
+	}
+	@EventHandler
+	public void onMobDeath(final EntityDeathEvent e)
+	{
+		if(!plugin.getConfig().getBoolean("ExpDrop.mobs"))
+			return;
+		e.setDroppedExp(0);
+	}
+	@EventHandler
+	public void onBottleXp(final ExpBottleEvent e)
+	{
+		if(!plugin.getConfig().getBoolean("ExpDrop.bottles"))
+			return;
+		final ProjectileSource shooter=e.getEntity().getShooter();
+		Player p=null;
+		if(shooter instanceof Player)
+			p=(Player) shooter;
+		if(p!=null)
+		{
+			if(!p.hasPermission("dropcontrol.bypass")&&!p.isOp())
+			{
+				e.setExperience(0);
+			}
+		}
+	}
 	///////
 	//GUI//
 	///////
@@ -133,7 +175,7 @@ public class EventListener implements Listener
 		}
 		else if(e.getRawSlot()==52)
 		{
-			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new LoadingBar(e.getView().getTopInventory().getItem(52),0,plugin));
+			Bukkit.getScheduler().runTask(plugin,new LoadingBar(e.getView().getTopInventory().getItem(52),plugin));
 			saveInvToList();
 			e.setCancelled(true);
 		}

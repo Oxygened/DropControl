@@ -75,6 +75,9 @@ public class Main extends JavaPlugin
         }
         itemsConfig=YamlConfiguration.loadConfiguration(itemsConfigFile);//moved
 		this.getConfig().addDefault("Analyse metadata",false);
+		this.getConfig().addDefault("ExpDrop.player",false);
+		this.getConfig().addDefault("ExpDrop.mobs",false);
+		this.getConfig().addDefault("ExpDrop.bottles",false);
 		this.getConfig().addDefault("Message d'erreur", "&4Vous n'avez pas la permission de lacher cet objet !");
 		ItemStack[] items={new ItemStack(Material.APPLE), new ItemStack(Material.ANVIL)};
 		for(World world : Bukkit.getWorlds())
